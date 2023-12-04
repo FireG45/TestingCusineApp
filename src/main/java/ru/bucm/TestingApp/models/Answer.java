@@ -12,13 +12,17 @@ public class Answer {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "is_true")
+    private boolean isTrue;
+
     @ManyToOne(targetEntity = Question.class)
     private Question question;
 
     public Answer() {}
 
-    public Answer(String description, Question question) {
+    public Answer(String description, boolean isTrue, Question question) {
         this.description = description;
+        this.isTrue = isTrue;
         this.question = question;
     }
 
@@ -44,5 +48,13 @@ public class Answer {
 
     public void setQuestion(Question question) {
         this.question = question;
+    }
+
+    public boolean isTrue() {
+        return isTrue;
+    }
+
+    public void setTrue(boolean aTrue) {
+        isTrue = aTrue;
     }
 }

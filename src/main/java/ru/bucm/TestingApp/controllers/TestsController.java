@@ -50,7 +50,8 @@ public class TestsController {
                                                @RequestParam("authorId") int authorId,
                                                @RequestParam("questions") String[] questions,
                                                @RequestParam("questionsImgs") String[] questionsImgs,
-                                               @RequestParam("answers") String[][] answers) {
+                                               @RequestParam("answers") String[] answers,
+                                               @RequestParam("answersChecks") boolean[] answersChecks) {
         Optional<User> user = usersService.getById(authorId);
         if (user.isEmpty()) return new TestUploadResponse(-1, HttpStatus.BAD_REQUEST);
         Test test = new Test(name, description, imgUrl, user.get());
@@ -59,7 +60,11 @@ public class TestsController {
         for (int i = 0; i < Math.min(questions.length, questionsImgs.length); i++) {
             Question question = new Question(questions[i], questionsImgs[i], test);
             questionModels.add(question);
-            for (String ans : answers[i]) answerModels.add(new Answer(ans, question));
+            for (int j = 0; j < answers.get(j).size(); j++) {
+                String ans = answers.get(i).get(j);
+                boolean checked = answersChecks.get(i).get(j);
+                answerModels.add(new Answer(ans, checked, question));
+            }
         }
         questionsService.saveAll(questionModels);
         answersService.saveAll(answerModels);

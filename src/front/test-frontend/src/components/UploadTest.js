@@ -13,7 +13,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Collapse from '@mui/material/Collapse';
 import StarBorder from '@mui/icons-material/StarBorder';
-import { Fab, IconButton, ListItem } from '@mui/material';
+import { Checkbox, Fab, IconButton, ListItem } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -26,33 +26,43 @@ export default function UploadTest() {
     const [questionsList, setQuestionsList] = React.useState(['']);
     const [questionsImgList, setQuestionsImgList] = React.useState(['']);
     const [answersList, setAnswersList] = React.useState([['']]);
+    const [answersBools, setAnswersBools] = React.useState([[false]]);
 
     const addQuestion = (vl) => {
         setQuestionsList(questionsList.concat([vl]));
         setQuestionsImgList(questionsImgList.concat([vl]));
         setAnswersList(answersList.concat([['']]))
+        setAnswersBools(answersBools.concat([[false]]))
     };
 
     const deleteQuestion = (index) => {
         let temp = questionsList.filter((item, i) => i !== index);
         let temp1 = questionsImgList.filter((item, i) => i !== index);
+        let temp2 = answersList.filter((item, i) => i !== index)
+        let temp3 = answersBools.filter((item, i) => i !== index)
         setQuestionsList(temp);
         setQuestionsImgList(temp1);
+        setAnswersList(temp2)
+        setAnswersBools(temp3)
     };
 
     const addAnswer = (i) => {
         answersList[i].push([''])
         setAnswersList(answersList.filter(() => true));
+        answersBools[i].push([false])
+        setAnswersBools(answersBools.filter(() => true));
     };
 
     const deleteAnswer = (index, jndex) => {
         answersList[index] = answersList[index].filter((item, j) => j !== jndex);
         setAnswersList(answersList.filter(() => true));
+        answersBools[index] = answersBools[index].filter((item, j) => j !== jndex);
+        setAnswersBools(answersBools.filter(() => true));
     };
 
     const handleFileChange = (e) => {
-        if (e.target.files) {
-            setFile(e.target.files[0]);
+        if (e.target.value) {
+            setFile(e.target.value);
         }
     };
 
@@ -60,6 +70,11 @@ export default function UploadTest() {
         if (e.target.value) {
             setTitle(e.target.value);
         }
+    }
+
+    const handleCheckBox = (i, j) => {
+        answersBools[i][j] = !answersBools[i][j]
+        setAnswersBools(answersBools.filter(() => true))
     }
 
     const handleAuthorChange = (e) => {
@@ -73,15 +88,17 @@ export default function UploadTest() {
         console.log("Uploading file...");
 
         const formData = new FormData();
-        formData.append("name", file);
-        formData.append("description", author);
-        formData.append("imgUrl", title);
+        formData.append("name", author);
+        formData.append("description", title);
+        formData.append("imgUrl", file);
         formData.append("authorId", 1);
         formData.append("questions", questionsList);
         formData.append("questionsImgs", questionsImgList);
         formData.append("answers", answersList);
+        formData.append("answersChecks", answersBools);
 
-        console.log(formData)
+        console.log(answersList)
+        console.log(answersBools)
 
         try {
             const result = await fetch("http://localhost:8080/upload", {
@@ -154,10 +171,6 @@ export default function UploadTest() {
                     {/* Вопрпосы */}
                     <Typography component="h1" variant="h5">
                         Вопросы
-                        {"    "}
-                        <Fab size="small" color="primary" aria-label="add" onClick={() => addQuestion('')}>
-                            <AddIcon />
-                        </Fab>
                     </Typography>
 
                     <List
@@ -218,6 +231,7 @@ export default function UploadTest() {
                                                 >
                                                     <ListItemIcon>
                                                         <h1>{j + 1}</h1>
+                                                        <Checkbox checked={answersBools[i][j]} onChange={() => handleCheckBox(i, j)}/>
                                                     </ListItemIcon>
                                                     <TextField
                                                         required
@@ -238,7 +252,14 @@ export default function UploadTest() {
                             </>)
                         })}
                     </List>
-
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                        onClick={() => addQuestion('')}
+                    >
+                        <AddIcon />
+                    </Button>
                     <Button
                         type="submit"
                         fullWidth
