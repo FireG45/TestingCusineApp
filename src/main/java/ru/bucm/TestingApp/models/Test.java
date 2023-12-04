@@ -2,6 +2,8 @@ package ru.bucm.TestingApp.models;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "tests")
 public class Test {
@@ -21,6 +23,9 @@ public class Test {
 
     @ManyToOne
     private User author;
+
+    @OneToMany(mappedBy = "test")
+    private List<Question> questions;
 
     public Test(String name, String description, String imageLink, User author) {
         this.name = name;
@@ -71,5 +76,13 @@ public class Test {
 
     public void setAuthor(User author_id) {
         this.author = author_id;
+    }
+
+    public List<Question> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
     }
 }

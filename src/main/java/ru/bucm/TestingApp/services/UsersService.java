@@ -6,6 +6,7 @@ import ru.bucm.TestingApp.models.User;
 import ru.bucm.TestingApp.repositories.UsersRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UsersService {
@@ -20,4 +21,6 @@ public class UsersService {
     public List<User> findAll() {
         return usersRepository.findAll();
     }
+
+    public Optional<User> getById(int id) { return usersRepository.findById(id); }
 }
